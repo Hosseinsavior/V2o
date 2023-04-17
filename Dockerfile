@@ -24,7 +24,7 @@ ENV V2RAY_CONFIG_PATH "/etc/v2ray/config.json"
 WORKDIR /etc/v2ray
 
 # Copy the sample configuration file to the container
-COPY config.json.sample .
+COPY config.json .
 
 # Expose the ports used by V2Ray
 EXPOSE 80

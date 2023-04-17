@@ -9,7 +9,7 @@ RUN apt-get update && \
 # Download and install V2Ray
 RUN curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip && \
     unzip v2ray.zip && \
-    chmod +x v2ctl v2ray
+    chmod +x v2ray
 
 # Define the path to the V2Ray configuration file
 ENV V2RAY_CONFIG_PATH="/app/config.json"
@@ -53,7 +53,7 @@ RUN cat << EOF > "${DIR_TMP}/heroku.json" && \
 EOF
 
 RUN mkdir -p "${DIR_CONFIG}" && \
-    ./v2ray config "${DIR_TMP}/heroku.json" > "${DIR_CONFIG}/config.pb"
+    ./entrypoint.sh config "${DIR_TMP}/heroku.json" > "${DIR_CONFIG}/config.pb"
 
 # Run V2Ray with the generated configuration file
 CMD ["./entrypoint.sh","-config=${DIR_CONFIG}/config.pb"]

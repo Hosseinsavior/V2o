@@ -1,33 +1,59 @@
-# Use a base image with the required dependencies
-FROM debian:buster-slim
+FROM debian:buster
 
-# Install curl and unzip
-RUN apt-get update && apt-get -y install curl unzip
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 # Download and install V2Ray
-WORKDIR /usr/local/bin
-RUN curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip \
-    && unzip v2ray-linux-64.zip \
-    && chmod +x v2ray \
-    && rm v2ray-linux-64.zip
-
-# Copy the entrypoint script to the container
-COPY entrypoint.sh /
-
-# Make the script executable
-RUN chmod +x /entrypoint.sh
+RUN curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip && \
+    unzip v2ray.zip && \
+    chmod +x v2ctl v2ray
 
 # Define the path to the V2Ray configuration file
-ENV V2RAY_CONFIG_PATH "/etc/v2ray/config.json"
+ENV V2RAY_CONFIG_PATH="/app/config.json"
 
-# Set the working directory to /etc/v2ray
-WORKDIR /etc/v2ray
+# Copy configuration file
+COPY config.json $V2RAY_CONFIG_PATH
 
-# Copy the sample configuration file to the container
-COPY config.json .
-
-# Expose the ports used by V2Ray
+# Expose port 80
 EXPOSE 80
 
-# Start V2Ray using the configuration file provided by the user
-ENTRYPOINT ["/entrypoint.sh"]
+# Generate V2Ray configuration in protobuf format
+ENV DIR_CONFIG="/etc/v2ray"
+ENV DIR_TMP="$(mktemp -d)"
+
+ENV ID=98f3d58a-a53d-4662-9698-83e6ac172b47
+ENV AID=64
+ENV WSPATH=/
+
+RUN cat << EOF > "${DIR_TMP}/heroku.json" && \
+    {
+        "inbounds": [{
+            "port": ${PORT},
+            "protocol": "vmess",
+            "settings": {
+                "clients": [{
+                    "id": "${ID}",
+                    "alterId": ${AID}
+                }]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "wsSettings": {
+                    "path": "${WSPATH}"
+                }
+            }
+        }],
+        "outbounds": [{
+            "protocol": "freedom"
+        }]
+    }
+EOF
+
+RUN mkdir -p "${DIR_CONFIG}" && \
+    ./v2ray config "${DIR_TMP}/heroku.json" > "${DIR_CONFIG}/config.pb"
+
+# Run V2Ray with the generated configuration file
+CMD ["./entrypoint.sh","-config=${DIR_CONFIG}/config.pb"]

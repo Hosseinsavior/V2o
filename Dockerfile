@@ -7,7 +7,7 @@ RUN apt-get update && apt-get -y install curl unzip
 # Download and install V2Ray
 WORKDIR /usr/local/bin
 RUN curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip \
-    && unzip v2ray.zip \
+    && unzip v2ray-linux-64.zip \
     && chmod +x v2ray \
     && rm v2ray-linux-64.zip
 

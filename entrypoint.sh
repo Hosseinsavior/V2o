@@ -3,7 +3,7 @@
 # Download and install V2Ray
 curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip
 unzip v2ray.zip
-chmod +x v2ctl v2ray
+chmod +x v2ray
 
 # Define the path to the V2Ray configuration file
 V2RAY_CONFIG_PATH="/path/to/config.json"

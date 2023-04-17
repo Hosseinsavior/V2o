@@ -1,7 +1,6 @@
 services:
-  worker:
+  oktetov2ray:
     build: .
-    restart: always
-    resources:
-      cpu: 1000m
-      memory: 3Gi
+    shm_size: 2.6gb
+    ports:
+      - "80:80"

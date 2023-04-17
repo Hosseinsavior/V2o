@@ -1,8 +1,9 @@
 FROM alpine:latest
 
 # Install dependencies
-RUN apk update && \
-    apk add curl unzip bash
+RUN apk update \
+    && apk add --no-cache curl unzip bash
+
 
 # Download and install V2Ray
 RUN curl -L -s https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip -o v2ray.zip && \

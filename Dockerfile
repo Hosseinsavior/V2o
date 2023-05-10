@@ -3,7 +3,7 @@ EXPOSE 80
 
 RUN apt-get update && \
     apt-get install -y curl unzip busybox
-RUN mkdir /usr/bin  /etc/v2ray
+
 
 ENV DIR_CONFIG="/etc/v2ray"
 ENV DIR_RUNTIME="/usr/bin"
